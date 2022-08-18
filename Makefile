@@ -2,8 +2,14 @@ all: test.elf
 
 CFLAGS := -Os -DONLY_MSPACES -DNO_MALLOC_STATS -DNO_MALLINFO -DHAVE_MMAP=0 -DNO_MSPACES_FOOTPRINT -DNO_MSPACES_REALLOC -DNO_MSPACES_IALLOC -DNO_MSPACES_MEMALIGN -DNO_MSPACES_BULK_FREE -DNO_MSPACES_MALLOPT
 
-test.elf:test.o malloc.o
+SRC := $(wildcard *.c)
+OBJ := $(patsubst %.c,%.o,${SRC})
+
+test.elf:${OBJ}
 	gcc ${CFLAGS} $^ -o $@
 
+test: test.elf
+	./test.elf
+
 clean:
-	-rm test.o malloc.o test.elf
+	rm -rf test.elf ${OBJ}

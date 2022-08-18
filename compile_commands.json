@@ -1,0 +1,34 @@
+[
+    {
+        "arguments": [
+            "cc",
+            "-c",
+            "-Og",
+            "-g",
+            "-DONLY_MSPACES",
+            "-DNO_MALLOC_STATS",
+            "-DNO_MALLINFO",
+            "-o",
+            "malloc.o",
+            "malloc.c"
+        ],
+        "directory": "/home/sunway/source/malloc",
+        "file": "malloc.c"
+    },
+    {
+        "arguments": [
+            "cc",
+            "-c",
+            "-Og",
+            "-g",
+            "-DONLY_MSPACES",
+            "-DNO_MALLOC_STATS",
+            "-DNO_MALLINFO",
+            "-o",
+            "test.o",
+            "test.c"
+        ],
+        "directory": "/home/sunway/source/malloc",
+        "file": "test.c"
+    }
+]

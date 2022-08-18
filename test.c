@@ -6,8 +6,11 @@
 
 #include "malloc.h"
 
+char buffer[10240];
 int main(int argc, char *argv[]) {
-    void *x = malloc(10);
-    void *y = malloc(10);
-    printf("%p %p\n", x, y);
+    mspace space = create_mspace_with_base(buffer, 10240, 0);
+    for (int i = 0; i < 10; i++) {
+        void *x = mspace_malloc(space, 10);
+        printf("%p\n", x);
+    }
 }

@@ -2661,6 +2661,7 @@ static int init_mparams(void) {
 }
 
 /* support for mallopt */
+#if !NO_MSPACES_MALLOPT
 static int change_mparam(int param_number, int value) {
   size_t val;
   ensure_initialization();
@@ -2683,6 +2684,7 @@ static int change_mparam(int param_number, int value) {
     return 0;
   }
 }
+#endif
 
 #if DEBUG
 /* ------------------------- Debugging Support --------------------------- */
@@ -3295,6 +3297,7 @@ static void internal_malloc_stats(mstate m) {
 */
 
 /* Malloc using mmap */
+#if HAVE_MMAP
 static void* mmap_alloc(mstate m, size_t nb) {
   size_t mmsize = mmap_align(nb + SIX_SIZE_T_SIZES + CHUNK_ALIGN_MASK);
   if (m->footprint_limit != 0) {
@@ -3360,7 +3363,7 @@ static mchunkptr mmap_resize(mstate m, mchunkptr oldp, size_t nb, int flags) {
   }
   return 0;
 }
-
+#endif  /* HAVE_MMAP */
 
 /* -------------------------- mspace management -------------------------- */
 
@@ -3409,6 +3412,7 @@ static void reset_on_error(mstate m) {
 #endif /* PROCEED_ON_ERROR */
 
 /* Allocate chunk and prepend remainder with chunk in successor base. */
+#if !ONLY_MSPACES
 static void* prepend_alloc(mstate m, char* newbase, char* oldbase,
                            size_t nb) {
   mchunkptr p = align_as_chunk(newbase);
@@ -3449,8 +3453,10 @@ static void* prepend_alloc(mstate m, char* newbase, char* oldbase,
   check_malloced_chunk(m, chunk2mem(p), nb);
   return chunk2mem(p);
 }
+#endif  /* ONLY_MSPACES */
 
 /* Add a segment to hold a new noncontiguous region */
+#if !ONLY_MSPACES
 static void add_segment(mstate m, char* tbase, size_t tsize, flag_t mmapped) {
   /* Determine locations and sizes of segment, fenceposts, old top */
   char* old_top = (char*)m->top;
@@ -3502,10 +3508,12 @@ static void add_segment(mstate m, char* tbase, size_t tsize, flag_t mmapped) {
 
   check_top_chunk(m, m->top);
 }
+#endif
 
 /* -------------------------- System allocation -------------------------- */
 
 /* Get memory from system using MORECORE or MMAP */
+#if !ONLY_MSPACES
 static void* sys_alloc(mstate m, size_t nb) {
   char* tbase = CMFAIL;
   size_t tsize = 0;
@@ -3515,12 +3523,13 @@ static void* sys_alloc(mstate m, size_t nb) {
   ensure_initialization();
 
   /* Directly map large chunks, but only if already initialized */
+#if HAVE_MMAP
   if (use_mmap(m) && nb >= mparams.mmap_threshold && m->topsize != 0) {
     void* mem = mmap_alloc(m, nb);
     if (mem != 0)
       return mem;
   }
-
+#endif
   asize = granularity_align(nb + SYS_ALLOC_PADDING);
   if (asize <= nb)
     return 0; /* wraparound */
@@ -3713,6 +3722,7 @@ static void* sys_alloc(mstate m, size_t nb) {
   MALLOC_FAILURE_ACTION;
   return 0;
 }
+#endif  /* !ONLY_MSPACE */
 
 /* -----------------------  system deallocation -------------------------- */
 
@@ -3832,6 +3842,7 @@ static int sys_trim(mstate m, size_t pad) {
 /* Consolidate and bin a chunk. Differs from exported versions
    of free mainly in that the chunk need not be marked as inuse.
 */
+#if !(NO_MSPACES_REALLOC && NO_MSPACES_MEMALIGN && NO_MSPACES_BULK_FREE)
 static void dispose_chunk(mstate m, mchunkptr p, size_t psize) {
   mchunkptr next = chunk_plus_offset(p, psize);
   if (!pinuse(p)) {
@@ -3899,6 +3910,7 @@ static void dispose_chunk(mstate m, mchunkptr p, size_t psize) {
     CORRUPTION_ERROR_ACTION(m);
   }
 }
+#endif
 
 /* ---------------------------- malloc --------------------------- */
 
@@ -4280,6 +4292,7 @@ void* dlcalloc(size_t n_elements, size_t elem_size) {
 /* ------------ Internal support for realloc, memalign, etc -------------- */
 
 /* Try to realloc; only in-place unless can_move true */
+#if !NO_MSPACES_REALLOC
 static mchunkptr try_realloc_chunk(mstate m, mchunkptr p, size_t nb,
                                    int can_move) {
   mchunkptr newp = 0;
@@ -4287,10 +4300,12 @@ static mchunkptr try_realloc_chunk(mstate m, mchunkptr p, size_t nb,
   mchunkptr next = chunk_plus_offset(p, oldsize);
   if (RTCHECK(ok_address(m, p) && ok_inuse(p) &&
               ok_next(p, next) && ok_pinuse(next))) {
+#if HAVE_MMAP
     if (is_mmapped(p)) {
       newp = mmap_resize(m, p, nb, can_move);
-    }
-    else if (oldsize >= nb) {             /* already big enough */
+    } else
+#endif
+    if (oldsize >= nb) {             /* already big enough */
       size_t rsize = oldsize - nb;
       if (rsize >= MIN_CHUNK_SIZE) {      /* split off remainder */
         mchunkptr r = chunk_plus_offset(p, nb);
@@ -4358,7 +4373,8 @@ static mchunkptr try_realloc_chunk(mstate m, mchunkptr p, size_t nb,
   }
   return newp;
 }
-
+#endif  /* NO_MSPACES_REALLOC */
+#if !NO_MSPACES_MEMALIGN
 static void* internal_memalign(mstate m, size_t alignment, size_t bytes) {
   void* mem = 0;
   if (alignment <  MIN_CHUNK_SIZE) /* must be at least a minimum chunk size */
@@ -4432,7 +4448,7 @@ static void* internal_memalign(mstate m, size_t alignment, size_t bytes) {
   }
   return mem;
 }
-
+#endif  /* NO_MSPACES_MEMALIGN */
 /*
   Common support for independent_X routines, handling
     all of the combinations that can result.
@@ -4440,6 +4456,7 @@ static void* internal_memalign(mstate m, size_t alignment, size_t bytes) {
     bit 0 set if all elements are same size (using sizes[0])
     bit 1 set if elements should be zeroed
 */
+#if !NO_MSPACES_IALLOC
 static void** ialloc(mstate m,
                      size_t n_elements,
                      size_t* sizes,
@@ -4558,6 +4575,7 @@ static void** ialloc(mstate m,
   POSTACTION(m);
   return marray;
 }
+#endif  /* NO_MSPACES_IALLOC */
 
 /* Try to free all pointers in the given array.
    Note: this could be made faster, by delaying consolidation,
@@ -4566,6 +4584,7 @@ static void** ialloc(mstate m,
    chunks before freeing, which will occur often if allocated
    with ialloc or the array is sorted.
 */
+#if !NO_MSPACES_BULK_FREE
 static size_t internal_bulk_free(mstate m, void* array[], size_t nelem) {
   size_t unfreed = 0;
   if (!PREACTION(m)) {
@@ -4607,6 +4626,7 @@ static size_t internal_bulk_free(mstate m, void* array[], size_t nelem) {
   }
   return unfreed;
 }
+#endif  /* NO_MSPACES_BULK_FREE */
 
 /* Traversal */
 #if MALLOC_INSPECT_ALL
@@ -4924,6 +4944,7 @@ mspace create_mspace_with_base(void* base, size_t capacity, int locked) {
   return (mspace)m;
 }
 
+#if HAVE_MMAP
 int mspace_track_large_chunks(mspace msp, int enable) {
   int ret = 0;
   mstate ms = (mstate)msp;
@@ -4940,6 +4961,7 @@ int mspace_track_large_chunks(mspace msp, int enable) {
   }
   return ret;
 }
+#endif
 
 size_t destroy_mspace(mspace msp) {
   size_t freed = 0;
@@ -5073,7 +5095,9 @@ void* mspace_malloc(mspace msp, size_t bytes) {
       goto postaction;
     }
 
+#if !ONLY_MSPACES
     mem = sys_alloc(ms, nb);
+#endif
 
   postaction:
     POSTACTION(ms);
@@ -5204,6 +5228,7 @@ void* mspace_calloc(mspace msp, size_t n_elements, size_t elem_size) {
   return mem;
 }
 
+#if !NO_MSPACES_REALLOC
 void* mspace_realloc(mspace msp, void* oldmem, size_t bytes) {
   void* mem = 0;
   if (oldmem == 0) {
@@ -5280,7 +5305,9 @@ void* mspace_realloc_in_place(mspace msp, void* oldmem, size_t bytes) {
   }
   return mem;
 }
+#endif  /* NO_MSPACES_REALLOC */
 
+#if !NO_MSPACES_MEMALIGN
 void* mspace_memalign(mspace msp, size_t alignment, size_t bytes) {
   mstate ms = (mstate)msp;
   if (!ok_magic(ms)) {
@@ -5291,7 +5318,9 @@ void* mspace_memalign(mspace msp, size_t alignment, size_t bytes) {
     return mspace_malloc(msp, bytes);
   return internal_memalign(ms, alignment, bytes);
 }
+#endif
 
+#if !NO_MSPACES_IALLOC
 void** mspace_independent_calloc(mspace msp, size_t n_elements,
                                  size_t elem_size, void* chunks[]) {
   size_t sz = elem_size; /* serves as 1-element array */
@@ -5313,9 +5342,13 @@ void** mspace_independent_comalloc(mspace msp, size_t n_elements,
   return ialloc(ms, n_elements, sizes, 0, chunks);
 }
 
+#endif  /* NO_MSPACES_IALLOC */
+
+#if !NO_MSPACES_BULK_FREE
 size_t mspace_bulk_free(mspace msp, void* array[], size_t nelem) {
   return internal_bulk_free((mstate)msp, array, nelem);
 }
+#endif
 
 #if MALLOC_INSPECT_ALL
 void mspace_inspect_all(mspace msp,
@@ -5364,6 +5397,7 @@ void mspace_malloc_stats(mspace msp) {
 }
 #endif /* NO_MALLOC_STATS */
 
+#if !NO_MSPACES_FOOTPRINT
 size_t mspace_footprint(mspace msp) {
   size_t result = 0;
   mstate ms = (mstate)msp;
@@ -5401,23 +5435,7 @@ size_t mspace_footprint_limit(mspace msp) {
   return result;
 }
 
-size_t mspace_set_footprint_limit(mspace msp, size_t bytes) {
-  size_t result = 0;
-  mstate ms = (mstate)msp;
-  if (ok_magic(ms)) {
-    if (bytes == 0)
-      result = granularity_align(1); /* Use minimal size */
-    if (bytes == MAX_SIZE_T)
-      result = 0;                    /* disable */
-    else
-      result = granularity_align(bytes);
-    ms->footprint_limit = result;
-  }
-  else {
-    USAGE_ERROR_ACTION(ms,ms);
-  }
-  return result;
-}
+#endif  /* NO_MSPACES_FOOTPRINT */
 
 #if !NO_MALLINFO
 struct mallinfo mspace_mallinfo(mspace msp) {
@@ -5427,7 +5445,6 @@ struct mallinfo mspace_mallinfo(mspace msp) {
   }
   return internal_mallinfo(ms);
 }
-#endif /* NO_MALLINFO */
 
 size_t mspace_usable_size(const void* mem) {
   if (mem != 0) {
@@ -5437,9 +5454,12 @@ size_t mspace_usable_size(const void* mem) {
   }
   return 0;
 }
+#endif /* NO_MALLINFO */
 
+#if !NO_MSPACES_MALLOPT
 int mspace_mallopt(int param_number, int value) {
   return change_mparam(param_number, value);
 }
+#endif
 
 #endif /* MSPACES */

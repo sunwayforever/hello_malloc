@@ -97,6 +97,7 @@ struct mallinfo {
 #endif  /* HAVE_USR_INCLUDE_MALLOC_H */
 #endif  /* !NO_MALLINFO */
 
+#if !ONLY_MSPACES
 /*
   malloc(size_t n)
   Returns a pointer to a newly allocated chunk of at least n bytes, or
@@ -519,6 +520,7 @@ void  dlmalloc_stats(void);
   assert(malloc_usable_size(p) >= 256);
 */
 size_t dlmalloc_usable_size(const void*);
+#endif  // ONLY_MSPACES
 
 #if MSPACES
 
@@ -571,7 +573,9 @@ mspace create_mspace_with_base(void* base, size_t capacity, int locked);
   allocated using this space.  The function returns the previous
   setting.
 */
+#if HAVE_MMAP
 int mspace_track_large_chunks(mspace msp, int enable);
+#endif
 
 #if !NO_MALLINFO
 /*
@@ -584,7 +588,9 @@ struct mallinfo mspace_mallinfo(mspace msp);
 /*
   An alias for mallopt.
 */
+#if !NO_MSPACES_MALLOPT
 int mspace_mallopt(int, int);
+#endif
 
 /*
   The following operate identically to their malloc counterparts
@@ -593,24 +599,50 @@ int mspace_mallopt(int, int);
 void* mspace_malloc(mspace msp, size_t bytes);
 void mspace_free(mspace msp, void* mem);
 void* mspace_calloc(mspace msp, size_t n_elements, size_t elem_size);
+
+#if !NO_MSPACES_REALLOC
 void* mspace_realloc(mspace msp, void* mem, size_t newsize);
 void* mspace_realloc_in_place(mspace msp, void* mem, size_t newsize);
+#endif
+
+#if !NO_MSPACES_MEMALIGN
 void* mspace_memalign(mspace msp, size_t alignment, size_t bytes);
+#endif
+
+#if !NO_MSPACES_IALLOC
 void** mspace_independent_calloc(mspace msp, size_t n_elements,
                                  size_t elem_size, void* chunks[]);
 void** mspace_independent_comalloc(mspace msp, size_t n_elements,
                                    size_t sizes[], void* chunks[]);
+#endif
+
+#if !NO_MSPACES_BULK_FREE
 size_t mspace_bulk_free(mspace msp, void**, size_t n_elements);
-size_t mspace_usable_size(const void* mem);
-void mspace_malloc_stats(mspace msp);
+#endif
+
 int mspace_trim(mspace msp, size_t pad);
+
+#if !NO_MALLINFO
+size_t mspace_usable_size(const void* mem);
+#endif
+
+#if !NO_MALLOC_STATS
+void mspace_malloc_stats(mspace msp);
+#endif
+
+#if !NO_MSPACES_FOOTPRINT
 size_t mspace_footprint(mspace msp);
 size_t mspace_max_footprint(mspace msp);
 size_t mspace_footprint_limit(mspace msp);
 size_t mspace_set_footprint_limit(mspace msp, size_t bytes);
+#endif
+
+#if MALLOC_INSPECT_ALL
 void mspace_inspect_all(mspace msp,
                         void(*handler)(void *, void *, size_t, void*),
                         void* arg);
+#endif
+
 #endif  /* MSPACES */
 
 #ifdef __cplusplus

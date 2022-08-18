@@ -3,32 +3,44 @@
         "arguments": [
             "cc",
             "-c",
-            "-Og",
-            "-g",
+            "-Os",
             "-DONLY_MSPACES",
             "-DNO_MALLOC_STATS",
             "-DNO_MALLINFO",
+            "-DHAVE_MMAP=0",
+            "-DNO_MSPACES_FOOTPRINT",
+            "-DNO_MSPACES_REALLOC",
+            "-DNO_MSPACES_IALLOC",
+            "-DNO_MSPACES_MEMALIGN",
+            "-DNO_MSPACES_BULK_FREE",
+            "-DNO_MSPACES_MALLOPT",
             "-o",
-            "malloc.o",
-            "malloc.c"
+            "test.o",
+            "test.c"
         ],
-        "directory": "/home/sunway/source/malloc",
-        "file": "malloc.c"
+        "directory": "/home/sunway/source/hello_malloc",
+        "file": "test.c"
     },
     {
         "arguments": [
             "cc",
             "-c",
-            "-Og",
-            "-g",
+            "-Os",
             "-DONLY_MSPACES",
             "-DNO_MALLOC_STATS",
             "-DNO_MALLINFO",
+            "-DHAVE_MMAP=0",
+            "-DNO_MSPACES_FOOTPRINT",
+            "-DNO_MSPACES_REALLOC",
+            "-DNO_MSPACES_IALLOC",
+            "-DNO_MSPACES_MEMALIGN",
+            "-DNO_MSPACES_BULK_FREE",
+            "-DNO_MSPACES_MALLOPT",
             "-o",
-            "test.o",
-            "test.c"
+            "mspace_malloc.o",
+            "mspace_malloc.c"
         ],
-        "directory": "/home/sunway/source/malloc",
-        "file": "test.c"
+        "directory": "/home/sunway/source/hello_malloc",
+        "file": "mspace_malloc.c"
     }
 ]

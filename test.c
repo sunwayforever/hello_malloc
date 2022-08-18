@@ -21,4 +21,5 @@ int main(int argc, char *argv[]) {
         mspace_free(space, x);
         printf("%p\n", x);
     }
+    destroy_mspace(space);
 }

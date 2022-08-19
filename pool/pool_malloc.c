@@ -9,10 +9,15 @@ static inline void* align_ptr(void* value) {
         void*)((((unsigned long int)value + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT);
 }
 
+static inline size_t align_num(size_t value) {
+    return ((value + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT;
+}
+
 Pool* init_pool(void* base, size_t capacity, size_t size, size_t count) {
     Pool* pool = (Pool*)base;
     base += sizeof(Pool);
     pool->free_list = align_ptr(base);
+    size = align_num(size);
     struct Chunk* current = pool->free_list;
     for (int i = 0; i < count - 1; i++) {
         struct Chunk* next = (struct Chunk*)((void*)current + size);
@@ -20,6 +25,7 @@ Pool* init_pool(void* base, size_t capacity, size_t size, size_t count) {
         current = next;
     }
     current->next = NULL;
+
     if ((void*)current + size - (void*)pool > capacity) {
         __builtin_trap();
     }

@@ -3,8 +3,8 @@
 
 #include "pool_malloc.h"
 
-//  NOTE: internally `Pool` resides at the beginning of `buffer`
-char buffer[32 * 10 + sizeof(Pool)];
+//  NOTE: internally `Pool` object itself resides at the beginning of `buffer`
+char buffer[32 * 10 + 16];
 
 int main(int argc, char *argv[]) {
     /* NOTE: due to data alignment, runtime error will be thrown if buffer is

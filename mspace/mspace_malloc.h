@@ -17,8 +17,12 @@ static inline void init_default_mspace(void* base, size_t capacity) {
 }
 
 static inline void* hxd_malloc(size_t n) {
+    if (n == 0) {
+        return NULL;
+    }
 #ifdef DEBUG_HIST
-    printf("HIST:ALLOC:%ld\n", n);
+    // pool_malloc has an `int` header for every malloc
+    printf("HIST:ALLOC:%ld\n", n + 4);
     size_t* ret = (size_t*)mspace_malloc(default_mspace, n + sizeof(size_t));
     *ret = n;
     return (void*)(ret + 1);
@@ -28,10 +32,13 @@ static inline void* hxd_malloc(size_t n) {
 }
 
 static inline void hxd_free(void* mem) {
+    if (mem == NULL) {
+        return;
+    }
 #ifdef DEBUG_HIST
     size_t* orig = (size_t*)mem - 1;
     size_t n = *orig;
-    printf("HIST:DEALLOC:%ld\n", n);
+    printf("HIST:DEALLOC:%ld\n", n + 4);
     mspace_free(default_mspace, (void*)orig);
 #else
     mspace_free(default_mspace, mem);

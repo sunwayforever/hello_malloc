@@ -15,11 +15,99 @@
             "-DNO_MSPACES_BULK_FREE",
             "-DNO_MSPACES_MALLOPT",
             "-o",
+            "pool/test_pool.o",
+            "pool/test_pool.c"
+        ],
+        "directory": "/home/sunway/source/hello_malloc",
+        "file": "pool/test_pool.c"
+    },
+    {
+        "arguments": [
+            "gcc",
+            "-c",
+            "-Os",
+            "-DONLY_MSPACES",
+            "-DNO_MALLOC_STATS",
+            "-DNO_MALLINFO",
+            "-DHAVE_MMAP=0",
+            "-DNO_MSPACES_FOOTPRINT",
+            "-DNO_MSPACES_REALLOC",
+            "-DNO_MSPACES_IALLOC",
+            "-DNO_MSPACES_MEMALIGN",
+            "-DNO_MSPACES_BULK_FREE",
+            "-DNO_MSPACES_MALLOPT",
+            "-o",
+            "pool/pool_malloc.o",
+            "pool/pool_malloc.c"
+        ],
+        "directory": "/home/sunway/source/hello_malloc",
+        "file": "pool/pool_malloc.c"
+    },
+    {
+        "arguments": [
+            "gcc",
+            "-c",
+            "-Os",
+            "-DONLY_MSPACES",
+            "-DNO_MALLOC_STATS",
+            "-DNO_MALLINFO",
+            "-DHAVE_MMAP=0",
+            "-DNO_MSPACES_FOOTPRINT",
+            "-DNO_MSPACES_REALLOC",
+            "-DNO_MSPACES_IALLOC",
+            "-DNO_MSPACES_MEMALIGN",
+            "-DNO_MSPACES_BULK_FREE",
+            "-DNO_MSPACES_MALLOPT",
+            "-o",
+            "bump_pointer/bump_pointer_malloc.o",
+            "bump_pointer/bump_pointer_malloc.c"
+        ],
+        "directory": "/home/sunway/source/hello_malloc",
+        "file": "bump_pointer/bump_pointer_malloc.c"
+    },
+    {
+        "arguments": [
+            "gcc",
+            "-c",
+            "-Os",
+            "-DONLY_MSPACES",
+            "-DNO_MALLOC_STATS",
+            "-DNO_MALLINFO",
+            "-DHAVE_MMAP=0",
+            "-DNO_MSPACES_FOOTPRINT",
+            "-DNO_MSPACES_REALLOC",
+            "-DNO_MSPACES_IALLOC",
+            "-DNO_MSPACES_MEMALIGN",
+            "-DNO_MSPACES_BULK_FREE",
+            "-DNO_MSPACES_MALLOPT",
+            "-o",
             "mspace/test_mspace.o",
             "mspace/test_mspace.c"
         ],
         "directory": "/home/sunway/source/hello_malloc",
         "file": "mspace/test_mspace.c"
+    },
+    {
+        "arguments": [
+            "gcc",
+            "-c",
+            "-Os",
+            "-DONLY_MSPACES",
+            "-DNO_MALLOC_STATS",
+            "-DNO_MALLINFO",
+            "-DHAVE_MMAP=0",
+            "-DNO_MSPACES_FOOTPRINT",
+            "-DNO_MSPACES_REALLOC",
+            "-DNO_MSPACES_IALLOC",
+            "-DNO_MSPACES_MEMALIGN",
+            "-DNO_MSPACES_BULK_FREE",
+            "-DNO_MSPACES_MALLOPT",
+            "-o",
+            "bump_pointer/test_bump_pointer.o",
+            "bump_pointer/test_bump_pointer.c"
+        ],
+        "directory": "/home/sunway/source/hello_malloc",
+        "file": "bump_pointer/test_bump_pointer.c"
     },
     {
         "arguments": [

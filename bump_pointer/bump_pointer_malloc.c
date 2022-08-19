@@ -6,7 +6,7 @@ static void* buffer;
 static size_t buffer_size;
 static size_t current_offset;
 
-#define ALIGNMENT 4
+#define ALIGNMENT 8
 
 static inline void* align_ptr(void* value) {
     return (

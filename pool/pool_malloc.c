@@ -2,14 +2,16 @@
 
 #include <stdio.h>
 
-#define ALIGNMENT 4
+#define ALIGNMENT 8
 
 static inline void* align_ptr(void* value) {
     return (
         void*)((((unsigned long int)value + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT);
 }
 
-void init_pool(Pool* pool, void* base, size_t size, size_t count) {
+Pool* init_pool(void* base, size_t capacity, size_t size, size_t count) {
+    Pool* pool = (Pool*)base;
+    base += sizeof(Pool);
     pool->free_list = align_ptr(base);
     struct Chunk* current = pool->free_list;
     for (int i = 0; i < count - 1; i++) {
@@ -18,6 +20,10 @@ void init_pool(Pool* pool, void* base, size_t size, size_t count) {
         current = next;
     }
     current->next = NULL;
+    if ((void*)current + size - (void*)pool > capacity) {
+        __builtin_trap();
+    }
+    return pool;
 }
 
 void* pool_malloc(Pool* pool) {
@@ -26,12 +32,12 @@ void* pool_malloc(Pool* pool) {
         return NULL;
     }
     struct Chunk* next = head->next;
-    pool->free_list = next;
+    ((Pool*)pool)->free_list = next;
     return (void*)head;
 }
 
 void pool_free(Pool* pool, void* mem) {
     struct Chunk* head = pool->free_list;
-    pool->free_list = (struct Chunk*)mem;
+    ((Pool*)pool)->free_list = (struct Chunk*)mem;
     ((struct Chunk*)mem)->next = head;
 }

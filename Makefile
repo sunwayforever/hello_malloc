@@ -1,4 +1,4 @@
-all: test.elf
+all: test_mspace.elf test_bump_pointer.elf
 
 CFLAGS := -Os -DONLY_MSPACES -DNO_MALLOC_STATS -DNO_MALLINFO -DHAVE_MMAP=0 \
 	-DNO_MSPACES_FOOTPRINT -DNO_MSPACES_REALLOC -DNO_MSPACES_IALLOC -DNO_MSPACES_MEMALIGN \
@@ -9,14 +9,21 @@ CC := gcc
 # CC := aarch64-linux-android23-clang
 # CC := riscv64-linux-gnu-gcc
 
-SRC := $(wildcard *.c)
-OBJ := $(patsubst %.c,%.o,${SRC})
+MSPACE_SRC := $(wildcard mspace/*.c)
+MSPACE_OBJ := $(patsubst %.c,%.o,${MSPACE_SRC})
 
-test.elf:${OBJ}
+BUMP_POINTER_SRC := $(wildcard bump_pointer/*.c)
+BUMP_POINTER_OBJ := $(patsubst %.c,%.o,${BUMP_POINTER_SRC})
+
+test_mspace.elf:${MSPACE_OBJ}
 	${CC} ${CFLAGS} $^ -o $@ -static
 
-test: test.elf
-	./test.elf
+test_bump_pointer.elf:${BUMP_POINTER_OBJ}
+	${CC} ${CFLAGS} $^ -o $@
+
+test: test_mspace.elf test_bump_pointer.elf
+	./test_mspace.elf
+	./test_bump_pointer.elf
 
 clean:
-	rm -rf test.elf ${OBJ}
+	rm -rf *.elf ${MSPACE_OBJ} ${BUMP_POINTER_OBJ}

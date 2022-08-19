@@ -1,6 +1,6 @@
 #include <stdio.h>
 
-#include "malloc.h"
+#include "mspace_malloc.h"
 
 char buffer[10240];
 char buffer2[10240];

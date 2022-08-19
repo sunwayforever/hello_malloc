@@ -1,7 +1,7 @@
 [
     {
         "arguments": [
-            "cc",
+            "gcc",
             "-c",
             "-Os",
             "-DONLY_MSPACES",
@@ -15,15 +15,15 @@
             "-DNO_MSPACES_BULK_FREE",
             "-DNO_MSPACES_MALLOPT",
             "-o",
-            "test.o",
-            "test.c"
+            "mspace/test_mspace.o",
+            "mspace/test_mspace.c"
         ],
         "directory": "/home/sunway/source/hello_malloc",
-        "file": "test.c"
+        "file": "mspace/test_mspace.c"
     },
     {
         "arguments": [
-            "cc",
+            "gcc",
             "-c",
             "-Os",
             "-DONLY_MSPACES",
@@ -37,10 +37,10 @@
             "-DNO_MSPACES_BULK_FREE",
             "-DNO_MSPACES_MALLOPT",
             "-o",
-            "mspace_malloc.o",
-            "mspace_malloc.c"
+            "mspace/dlmalloc.o",
+            "mspace/dlmalloc.c"
         ],
         "directory": "/home/sunway/source/hello_malloc",
-        "file": "mspace_malloc.c"
+        "file": "mspace/dlmalloc.c"
     }
 ]

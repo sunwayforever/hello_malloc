@@ -1,8 +1,8 @@
 #ifndef MALLOC_H
 #define MALLOC_H
-#include "mspace_malloc.h"
+#include "dlmalloc.h"
 
-void* default_mspace;
+static void* default_mspace;
 static inline void init_default_mspace(void* base, size_t capacity) {
     default_mspace = create_mspace_with_base(base, capacity, 0);
 }

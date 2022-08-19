@@ -1,8 +1,8 @@
-all: test_mspace.elf test_bump_pointer.elf
+all: test_mspace.elf test_bump_pointer.elf test_pool.elf
 
 CFLAGS := -Os -DONLY_MSPACES -DNO_MALLOC_STATS -DNO_MALLINFO -DHAVE_MMAP=0 \
 	-DNO_MSPACES_FOOTPRINT -DNO_MSPACES_REALLOC -DNO_MSPACES_IALLOC -DNO_MSPACES_MEMALIGN \
-	-DNO_MSPACES_BULK_FREE -DNO_MSPACES_MALLOPT
+	-DNO_MSPACES_BULK_FREE -DNO_MSPACES_MALLOPT -g
 
 CC := gcc
 # CC := mips-linux-musl-gcc
@@ -15,15 +15,17 @@ MSPACE_OBJ := $(patsubst %.c,%.o,${MSPACE_SRC})
 BUMP_POINTER_SRC := $(wildcard bump_pointer/*.c)
 BUMP_POINTER_OBJ := $(patsubst %.c,%.o,${BUMP_POINTER_SRC})
 
+POOL_SRC := $(wildcard pool/*.c)
+POOL_OBJ := $(patsubst %.c,%.o,${POOL_SRC})
+
 test_mspace.elf:${MSPACE_OBJ}
-	${CC} ${CFLAGS} $^ -o $@ -static
+	${CC} ${CFLAGS} $^ -o $@
 
 test_bump_pointer.elf:${BUMP_POINTER_OBJ}
 	${CC} ${CFLAGS} $^ -o $@
 
-test: test_mspace.elf test_bump_pointer.elf
-	./test_mspace.elf
-	./test_bump_pointer.elf
+test_pool.elf:${POOL_OBJ}
+	${CC} ${CFLAGS} $^ -o $@
 
 clean:
-	rm -rf *.elf ${MSPACE_OBJ} ${BUMP_POINTER_OBJ}
+	rm -rf *.elf ${MSPACE_OBJ} ${BUMP_POINTER_OBJ} ${POOL_OBJ}

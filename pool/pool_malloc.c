@@ -1,17 +1,7 @@
 #include "pool_malloc.h"
 
 #include <stdio.h>
-
-#define ALIGNMENT 8
-
-static inline void* align_ptr(void* value) {
-    return (
-        void*)((((unsigned long int)value + ALIGNMENT - 1) / ALIGNMENT) * ALIGNMENT);
-}
-
-static inline size_t align_num(size_t value, size_t align) {
-    return ((value + align - 1) / align) * align;
-}
+#include <string.h>
 
 extern void* POOLS[];
 extern size_t BIN_SIZE;
@@ -43,8 +33,9 @@ void hxd_free(void* mem) {
 Pool* init_pool(void* base, size_t capacity, size_t size, size_t count) {
     Pool* pool = (Pool*)base;
     base += sizeof(Pool);
-    pool->free_list = align_ptr(base);
     size = align_num(size, ALIGNMENT);
+    pool->free_list = align_ptr(base);
+    pool->size = size;
     struct Chunk* current = pool->free_list;
     for (int i = 0; i < count - 1; i++) {
         struct Chunk* next = (struct Chunk*)((void*)current + size);
@@ -67,6 +58,15 @@ void* pool_malloc(Pool* pool) {
     struct Chunk* next = head->next;
     ((Pool*)pool)->free_list = next;
     return (void*)head;
+}
+
+void* pool_calloc(Pool* pool) {
+    void* ret = pool_malloc(pool);
+    if (ret == NULL) {
+        return NULL;
+    }
+    memset(ret, 0, pool->size);
+    return ret;
 }
 
 void pool_free(Pool* pool, void* mem) {

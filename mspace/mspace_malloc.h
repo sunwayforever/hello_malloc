@@ -1,11 +1,7 @@
 #ifndef MALLOC_H
 #define MALLOC_H
 #include "dlmalloc.h"
-
-#ifndef USE_HXD_PREFIX
-#define hxd_malloc malloc
-#define hxd_free free
-#endif
+#include "../common.h"
 
 #ifdef DDEBUG_HIST
 #include <stdio.h>
@@ -29,6 +25,15 @@ static inline void* hxd_malloc(size_t n) {
 #else
     return mspace_malloc(default_mspace, n);
 #endif
+}
+
+static inline void* hxd_calloc(size_t n) {
+    void* ret = hxd_malloc(n);
+    if (ret == NULL) {
+        return NULL;
+    }
+    memset(ret, 0, n);
+    return ret;
 }
 
 static inline void hxd_free(void* mem) {

@@ -1,6 +1,6 @@
 all: test_mspace.elf test_bump_pointer.elf test_pool.elf
 
-CFLAGS := -Os -DONLY_MSPACES -DNO_MALLOC_STATS -DNO_MALLINFO -DHAVE_MMAP=0 \
+CFLAGS := -Og -g -DONLY_MSPACES -DNO_MALLOC_STATS -DNO_MALLINFO -DHAVE_MMAP=0 \
 	-DNO_MSPACES_FOOTPRINT -DNO_MSPACES_REALLOC -DNO_MSPACES_IALLOC -DNO_MSPACES_MEMALIGN \
 	-DNO_MSPACES_BULK_FREE -DNO_MSPACES_MALLOPT -MMD -m32
 
@@ -51,6 +51,9 @@ test_pool.elf:${POOL_OBJ} ${POOL_TEST_OBJ}
 
 %.elf:
 	${CC} ${CFLAGS} $^ -o $@
+
+test:
+	test_mspace.elf; test_bump_pointer.elf; test_pool.elf
 
 clean:
 	rm -rf *.elf *.a ${OBJ} ${DEP}

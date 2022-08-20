@@ -20,3 +20,13 @@ void* hxd_malloc(size_t n) {
     current_offset = align_num(current_offset + n, ALIGNMENT);
     return ret;
 }
+
+void* hxd_calloc(size_t n, size_t size) {
+    void* ret = hxd_malloc(n * size);
+    if (ret == NULL) {
+        return NULL;
+    }
+    memset(ret, 0, n);
+    return ret;
+}
+void free(void* mem) {}

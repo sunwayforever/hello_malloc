@@ -8,6 +8,9 @@
 #define hxd_free free
 #endif
 
+#include <stddef.h>
+#include <string.h>
+
 #define ALIGNMENT 8
 
 static inline void* align_ptr(void* value) {

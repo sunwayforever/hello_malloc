@@ -20,6 +20,15 @@ void* hxd_malloc(size_t n) {
     return (void*)(ret + 1);
 }
 
+void* hxd_calloc(size_t n, size_t size) {
+    void* ret = hxd_malloc(n * size);
+    if (ret == NULL) {
+        return NULL;
+    }
+    memset(ret, 0, n);
+    return ret;
+}
+
 void hxd_free(void* mem) {
     if (mem == NULL) {
         return;

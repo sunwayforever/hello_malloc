@@ -15,7 +15,7 @@ int main(int argc, char *argv[]) {
             void *y = hxd_malloc(size);
             memset(x, 1, size);
             memset(y, 2, size);
-            free(y);
+            hxd_free(y);
         }
     }
 }

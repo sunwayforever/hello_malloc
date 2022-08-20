@@ -52,8 +52,10 @@ test_pool.elf:${POOL_OBJ} ${POOL_TEST_OBJ}
 %.elf:
 	${CC} ${CFLAGS} $^ -o $@
 
-test:
-	test_mspace.elf; test_bump_pointer.elf; test_pool.elf
+test:test_mspace.elf test_bump_pointer.elf test_pool.elf
+	./test_mspace.elf; \
+	./test_bump_pointer.elf; \
+	./test_pool.elf
 
 clean:
 	rm -rf *.elf *.a ${OBJ} ${DEP}

@@ -6,7 +6,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 from collections import namedtuple, defaultdict
 
-BIN_SIZES = [2, 4, 8, 16, 32, 64]
+BIN_SIZES = [2, 4, 8, 16, 32, 64, 128, 256, 512]
 
 
 def align(value, a):

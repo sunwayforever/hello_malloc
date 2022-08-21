@@ -912,3 +912,6 @@ int fctprintf(void (*out)(char character, void* arg), void* arg, const char* for
   va_end(va);
   return ret;
 }
+
+#include <unistd.h>
+void _putchar(char character) { int _ = write(2, &character, 1);}

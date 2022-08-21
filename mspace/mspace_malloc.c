@@ -1,11 +1,5 @@
 #include "mspace_malloc.h"
 
-#ifdef DEBUG_HIST
-#include "../printf.h"
-#include "unistd.h"
-void _putchar(char character) { write(1, &character, 1); }
-#endif
-
 static void* default_mspace;
 
 void init_default_mspace(void* base, size_t capacity) {
@@ -18,8 +12,8 @@ void* hxd_malloc(size_t n) {
     }
 #ifdef DEBUG_HIST
     // NOTE: pool_malloc has an `int` header for every malloc, on both m32 and
-    // m64
-    printf("HIST:ALLOC:%ld\n", n + 4);
+    // m64, it must align with `BIN_INDEX_SIZE` in pool_malloc.c
+    printf("MSPACE:ALLOC:%ld\n", ALIGNMENT >= 4 ? n + ALIGNMENT : n + 4);
     size_t* ret = (size_t*)mspace_malloc(default_mspace, n + sizeof(size_t));
     *ret = n;
     return (void*)(ret + 1);
@@ -44,7 +38,7 @@ void hxd_free(void* mem) {
 #ifdef DEBUG_HIST
     size_t* orig = (size_t*)mem - 1;
     size_t n = *orig;
-    printf("HIST:DEALLOC:%ld\n", n + 4);
+    printf("MSPACE:DEALLOC:%ld\n", ALIGNMENT >= 4 ? n + ALIGNMENT : n + 4);
     mspace_free(default_mspace, (void*)orig);
 #else
     mspace_free(default_mspace, mem);

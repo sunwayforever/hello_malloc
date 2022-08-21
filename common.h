@@ -22,4 +22,8 @@ static inline size_t align_num(size_t value, size_t align) {
     return ((value + align - 1) / align) * align;
 }
 
+#ifdef DEBUG_HIST
+#include "printf.h"
+#endif
+
 #endif  // COMMON_H

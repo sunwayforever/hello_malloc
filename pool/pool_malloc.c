@@ -1,23 +1,32 @@
 #include "pool_malloc.h"
 
-#include <stdio.h>
+#include <assert.h>
+#include <stdint.h>
 #include <string.h>
 
 extern void* POOLS[];
 extern size_t BIN_SIZE;
+
+typedef uint32_t bin_index_t;
+#define BIN_INDEX_SIZE \
+    (ALIGNMENT >= sizeof(bin_index_t) ? ALIGNMENT : sizeof(bin_index_t))
+
 void* hxd_malloc(size_t n) {
     if (n == 0) {
         return NULL;
     }
-    n += sizeof(int);
-    int bin = align_num(n, BIN_SIZE) / BIN_SIZE;
+#ifdef DEBUG_HIST
+    printf("POOL:ALLOC:%ld\n", n);
+#endif
+    n += BIN_INDEX_SIZE;
+    size_t bin = align_num(n, BIN_SIZE) / BIN_SIZE;
     Pool* pool = POOLS[bin];
-    int* ret = pool_malloc(pool);
+    bin_index_t* ret = pool_malloc(pool);
     if (ret == NULL) {
         return NULL;
     }
-    *ret = bin;
-    return (void*)(ret + 1);
+    *ret = (bin_index_t)bin;
+    return (void*)ret + BIN_INDEX_SIZE;
 }
 
 void* hxd_calloc(size_t n, size_t size) {
@@ -33,8 +42,8 @@ void hxd_free(void* mem) {
     if (mem == NULL) {
         return;
     }
-    int* orig = (int*)mem - 1;
-    int bin = *orig;
+    bin_index_t* orig = (bin_index_t*)(mem - BIN_INDEX_SIZE);
+    bin_index_t bin = *orig;
     Pool* pool = POOLS[bin];
     pool_free(pool, orig);
 }

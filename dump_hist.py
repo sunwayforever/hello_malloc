@@ -50,7 +50,8 @@ def process():
     for bin in BIN_SIZES:
         record = records[bin]
         watermark = sum([x.watermark for x in record.values()])
-        print(f"bin_size: {bin:2}, watermark: {(watermark/1024):.1f} KB")
+        bin_count = max(record.keys()) // bin
+        print(f"bin_size: {bin:2}, watermark: {(watermark/1024):.1f} KB, bin_count: {(bin_count+1)/1024:.1f} K")
 
         buffer_declare = ""
         pool_declare = "void *POOLS[]={\n"
@@ -61,7 +62,6 @@ def process():
             f.write(f"#define POOL_CONFIG_{bin}_H\n")
             f.write("#include <stddef.h>\n")
             f.write(f"size_t BIN_SIZE = {bin};\n")
-            bin_count = max(record.keys()) // bin
             for i in range(bin_count + 1):
                 key = i * bin
                 if key in record:

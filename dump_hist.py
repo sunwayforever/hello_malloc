@@ -21,6 +21,7 @@ class Record:
 
 def process():
     records = defaultdict(lambda: defaultdict(lambda: Record()))
+    total_allocated = 0
     total_curr = 0
     total_watermark = 0
     with open(args.log, "r") as f:
@@ -31,6 +32,7 @@ def process():
                 continue
             if action == "ALLOC":
                 total_curr += size
+                total_allocated += size
                 if total_curr > total_watermark:
                     total_watermark = total_curr
             if action == "DEALLOC":
@@ -46,12 +48,19 @@ def process():
                 if action == "DEALLOC":
                     record.curr -= a_size
 
-    print(f"watermark: {(total_watermark/1024):.1f} KB")
+    print(
+        f"mspace:\ncurr: {(total_curr/1024):.1f} KB\nwatermark: {(total_watermark/1024):.1f} KB\n"
+    )
+    print(f"bump:\nalloc: {(total_allocated/1024):.1f} KB\n")
+
+    print(f"pool:")
     for bin in BIN_SIZES:
         record = records[bin]
         watermark = sum([x.watermark for x in record.values()])
         bin_count = max(record.keys()) // bin
-        print(f"bin_size: {bin:2}, watermark: {(watermark/1024):.1f} KB, bin_count: {(bin_count+1)/1024:.1f} K")
+        print(
+            f"bin_size: {bin:2}, watermark: {(watermark/1024):.1f} KB, bin_count: {(bin_count+1)/1024:.1f} K"
+        )
 
         buffer_declare = ""
         pool_declare = "void *POOLS[]={\n"
@@ -76,6 +85,7 @@ def process():
             f.write(pool_declare)
             f.write(f"#define INIT_POOLS \\\n{pool_init[:-2]}\n")
             f.write(f"#endif //POOL_CONFIG_{bin}_H")
+
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()

@@ -9,8 +9,8 @@ CFLAGS := -Os -g -DONLY_MSPACES -DNO_MALLOC_STATS -DNO_MALLINFO -DHAVE_MMAP=0 \
 # CFLAGS += -DUSE_HXD_PREFIX
 
 # for mspace_malloc hist debug
-# CFLAGS += -DDEBUG_HIST
-# LIB_OBJ += printf.o
+CFLAGS += -DDEBUG_HIST
+LIB_OBJ += printf.o
 # end
 
 CC := gcc

@@ -2,15 +2,15 @@ all: test_mspace.elf test_bump_pointer.elf test_pool.elf
 
 SHELL := /bin/bash
 
-CFLAGS := -Os -g -DONLY_MSPACES -DNO_MALLOC_STATS -DNO_MALLINFO -DHAVE_MMAP=0 \
+CFLAGS := -Os -DONLY_MSPACES -DNO_MALLOC_STATS -DNO_MALLINFO -DHAVE_MMAP=0 \
 	-DNO_MSPACES_FOOTPRINT -DNO_MSPACES_REALLOC -DNO_MSPACES_IALLOC -DNO_MSPACES_MEMALIGN \
 	-DNO_MSPACES_BULK_FREE -DNO_MSPACES_MALLOPT -MMD -m32
 
 # CFLAGS += -DUSE_HXD_PREFIX
 
 # for mspace_malloc hist debug
-CFLAGS += -DDEBUG_HIST
-LIB_OBJ += printf.o
+# CFLAGS += -DDEBUG_HIST
+# LIB_OBJ += printf.o
 # end
 
 CC := gcc
@@ -45,6 +45,8 @@ TEST_OBJ:=malloc_benchmark.o
 
 OBJ:=${MSPACE_OBJ} ${BUMP_POINTER_OBJ}\
 	${POOL_OBJ} ${MSPACE_TEST_OBJ} ${BUMP_POINTER_TEST_OBJ} ${POOL_TEST_OBJ} ${LIB_OBJ} ${TEST_OBJ}
+
+${OBJ}:Makefile
 
 DEP := $(OBJ:.o=.d)
 -include ${DEP}

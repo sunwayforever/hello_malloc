@@ -1,6 +1,3 @@
-#include <stdlib.h>
-#include <string.h>
-
 #include "pool_config.h"
 #include "pool_malloc.h"
 

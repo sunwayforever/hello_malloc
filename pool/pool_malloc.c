@@ -1,8 +1,6 @@
 #include "pool_malloc.h"
 
-#include <assert.h>
 #include <stdint.h>
-#include <string.h>
 
 extern size_t BIN_SIZE;
 extern void* POOLS[];

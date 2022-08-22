@@ -11,6 +11,11 @@
 #include <stddef.h>
 #include <string.h>
 
+void init_spaces();
+void* hxd_malloc(size_t n);
+void* hxd_calloc(size_t n, size_t size);
+void hxd_free(void* mem);
+
 #define ALIGNMENT 8
 
 static inline void* align_ptr(void* value) {

@@ -1,7 +1,8 @@
 #include "mspace_malloc.h"
 
-#include <stddef.h>
 #include <stdint.h>
+
+#include "dlmalloc.h"
 
 void* init_mspace(void* base, size_t capacity) {
     return create_mspace_with_base(base, capacity, 0);

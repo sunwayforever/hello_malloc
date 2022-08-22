@@ -1,6 +1,3 @@
-#include <stdlib.h>
-#include <string.h>
-
 #include "mspace_config.h"
 #include "mspace_malloc.h"
 

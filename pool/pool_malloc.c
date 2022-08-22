@@ -4,8 +4,36 @@
 #include <stdint.h>
 #include <string.h>
 
-extern void* POOLS[];
 extern size_t BIN_SIZE;
+extern void* POOLS[];
+extern void* BUFFERS[];
+extern size_t BUFFER_CAPACITIES[];
+extern size_t BUFFER_SIZES[];
+extern size_t BUFFER_COUNTS[];
+extern int N_BUFFER;
+
+struct Chunk {
+    struct Chunk* next;
+};
+
+typedef struct {
+    struct Chunk* free_list;
+    size_t size;
+} Pool;
+
+Pool* init_pool(void* base, size_t capacity, size_t size, size_t count);
+
+void init_spaces() {
+    for (int i = 0; i < N_BUFFER; i++) {
+        init_pool(
+            BUFFERS[i], BUFFER_CAPACITIES[i], BUFFER_SIZES[i],
+            BUFFER_COUNTS[i]);
+    }
+}
+
+void* pool_malloc(Pool* pool);
+void* pool_calloc(Pool* pool);
+void pool_free(Pool* pool, void* mem);
 
 typedef uint32_t bin_index_t;
 #define BIN_INDEX_SIZE \

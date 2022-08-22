@@ -6,9 +6,8 @@
 
 #include "../common.h"
 
-void init_default_mspace(void* base, size_t capacity);
-
+void init_spaces();
 void* hxd_malloc(size_t n);
 void* hxd_calloc(size_t n, size_t size);
-void free(void* mem);
+void hxd_free(void* mem);
 #endif  // BUMP_POINTER_MALLOC_H

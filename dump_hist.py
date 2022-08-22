@@ -62,9 +62,13 @@ def process():
             f"bin_size: {bin:2}, watermark: {(watermark/1024):.1f} KB, bin_count: {(bin_count+1)/1024:.1f} K"
         )
 
-        buffer_declare = ""
         pool_declare = "void *POOLS[]={\n"
-        pool_init = ""
+
+        buffer_declare = ""
+        buffers = "void *BUFFERS[]={\n"
+        buffer_capacities = "size_t BUFFER_CAPACITIES[]={\n"
+        buffer_sizes = "size_t BUFFER_SIZES[]={\n"
+        buffer_counts = "size_t BUFFER_COUNTS[]={\n"
 
         with open(f"/tmp/pool_config_{bin}.h", "w") as f:
             f.write(f"#ifndef POOL_CONFIG_{bin}_H\n")
@@ -74,16 +78,22 @@ def process():
             for i in range(bin_count + 1):
                 key = i * bin
                 if key in record:
-                    buffer_declare += f"char buffer_{i}[{record[key].watermark+16}];\n"
-                    pool_declare += f"    buffer_{i},\n"
-                    pool_init += f"init_pool(buffer_{i}, sizeof(buffer_{i}), {key}, {record[key].watermark//key});\\\n"
+                    buffer_declare += f"static char buffer_{i}[{record[key].watermark+16}];\n"
+                    buffers += f"buffer_{i},"
+                    pool_declare += f"buffer_{i},"
+                    buffer_capacities += f"sizeof(buffer_{i}),"
+                    buffer_sizes += f"{key},"
+                    buffer_counts += f"{record[key].watermark//key},"
                 else:
-                    pool_declare += "    0,\n"
-            pool_declare += "};\n"
+                    pool_declare += "0,"
 
             f.write(buffer_declare)
-            f.write(pool_declare)
-            f.write(f"#define INIT_POOLS \\\n{pool_init[:-2]}\n")
+            f.write(buffers[:-1] + "};\n")
+            f.write(pool_declare[:-1] + "};\n")
+            f.write(buffer_capacities[:-1] + "};\n")
+            f.write(buffer_sizes[:-1] + "};\n")
+            f.write(buffer_counts[:-1] + "};\n")
+            f.write(f"int N_BUFFER={len(record)};\n")
             f.write(f"#endif //POOL_CONFIG_{bin}_H")
 
 

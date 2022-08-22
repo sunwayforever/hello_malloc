@@ -4,7 +4,7 @@
 #include <stddef.h>
 
 static char buffer_1[1024000];
-static char buffer_2[10240000];
+static char buffer_2[102400000];
 
 void* SPACES[] = {
     buffer_1,

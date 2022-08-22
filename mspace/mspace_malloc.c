@@ -9,6 +9,13 @@ void* init_mspace(void* base, size_t capacity) {
 
 extern int N_SPACES;
 extern void* SPACES[];
+extern size_t SPACE_SIZES[];
+
+void init_spaces() {
+    for (int i = 0; i < N_SPACES; i++) {
+        SPACES[i] = init_mspace(SPACES[i], SPACE_SIZES[i]);
+    }
+}
 
 typedef uint32_t space_index_t;
 #define SPACE_INDEX_SIZE \

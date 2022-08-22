@@ -7,7 +7,6 @@
 extern void malloc_benchmark();
 
 int main(int argc, char *argv[]) {
-    INIT_SPACES
-
+    init_spaces();
     malloc_benchmark();
 }

@@ -8,9 +8,10 @@ int malloc_check() {
     int *ptr[N];
     memset(ptr, 0, N * sizeof(int *));
     for (int i = 1; i < N; i++) {
-        ptr[i] = (int *)malloc(i * sizeof(int));
+        ptr[i] = (int *)calloc(i, sizeof(int));
         assert(ptr[i] != NULL);
         for (int j = 0; j < i; j++) {
+            assert(ptr[i][j] == 0);
             ptr[i][j] = i;
         }
     }

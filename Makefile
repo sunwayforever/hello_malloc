@@ -2,9 +2,9 @@ all: test_mspace.elf test_bump_pointer.elf test_pool.elf
 
 SHELL := /bin/bash
 
-CFLAGS := -Os -flto -DONLY_MSPACES -DNO_MALLOC_STATS -DNO_MALLINFO -DHAVE_MMAP=0 \
+CFLAGS := -O0 -flto -DONLY_MSPACES -DNO_MALLOC_STATS -DNO_MALLINFO -DHAVE_MMAP=0 \
 	-DNO_MSPACES_FOOTPRINT -DNO_MSPACES_REALLOC -DNO_MSPACES_IALLOC -DNO_MSPACES_MEMALIGN \
-	-DNO_MSPACES_BULK_FREE -DNO_MSPACES_MALLOPT -MMD -m32
+	-DNO_MSPACES_BULK_FREE -DNO_MSPACES_MALLOPT -MMD -m32 -g
 
 # CFLAGS += -DUSE_HXD_PREFIX
 
@@ -39,7 +39,7 @@ POOL_OBJ := $(patsubst %.c,%.o,${POOL_SRC})
 POOL_TEST_OBJ := $(patsubst %.c,%.o,${POOL_TEST_SRC})
 libpool_malloc.a:${POOL_OBJ}
 
-TEST_OBJ:=malloc_benchmark.o
+TEST_OBJ:=malloc_benchmark.o malloc_check.o
 %a: ${LIB_OBJ}
 	ar rcs $@ $^
 

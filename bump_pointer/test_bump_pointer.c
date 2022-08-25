@@ -7,7 +7,9 @@
 #include "bump_pointer_malloc.h"
 
 extern void malloc_benchmark();
-int main(int argc, char *argv[]) {
+extern void malloc_check();
+int main(int argc, char* argv[]) {
     init_spaces();
     malloc_benchmark();
+    malloc_check();
 }

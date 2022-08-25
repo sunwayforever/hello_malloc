@@ -3,20 +3,18 @@
 #include <stdlib.h>
 #include <string.h>
 
-#define N 10240
-void malloc_check() {
-    int* ptr[N];
-    memset(ptr, 0, N * sizeof(int*));
-    for (int i = 0; i < N; i++) {
-        ptr[i] = (int*)malloc(i * sizeof(int));
-        if (ptr[i] == NULL) {
-            break;
-        }
+#define N 1024
+int malloc_check() {
+    int *ptr[N];
+    memset(ptr, 0, N * sizeof(int *));
+    for (int i = 1; i < N; i++) {
+        ptr[i] = (int *)malloc(i * sizeof(int));
+        assert(ptr[i] != NULL);
         for (int j = 0; j < i; j++) {
             ptr[i][j] = i;
         }
     }
-    for (int i = 0; i < N; i++) {
+    for (int i = 1; i < N; i++) {
         if (ptr[i] == NULL) {
             break;
         }
@@ -24,7 +22,7 @@ void malloc_check() {
             assert(ptr[i][j] == i);
         }
     }
-    for (int i = N - 1; i >= 0; i--) {
+    for (int i = N - 1; i >= 1; i--) {
         if (ptr[i] == NULL) {
             continue;
         }
@@ -32,7 +30,7 @@ void malloc_check() {
             ptr[i][j] = i;
         }
     }
-    for (int i = 0; i < N; i++) {
+    for (int i = 1; i < N; i++) {
         if (ptr[i] == NULL) {
             break;
         }

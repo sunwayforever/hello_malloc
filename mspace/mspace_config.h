@@ -3,7 +3,7 @@
 #define MSPACE_CONFIG_H
 #include <stddef.h>
 
-static char buffer_1[1024000];
+static char buffer_1[1024];
 static char buffer_2[10240000];
 
 void* SPACES[] = {

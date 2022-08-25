@@ -5095,9 +5095,7 @@ void* mspace_malloc(mspace msp, size_t bytes) {
       goto postaction;
     }
 
-#if !ONLY_MSPACES
-    mem = sys_alloc(ms, nb);
-#endif
+    mem = 0;
 
   postaction:
     POSTACTION(ms);

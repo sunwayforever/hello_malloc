@@ -55,7 +55,7 @@ void* hxd_calloc(size_t n, size_t size) {
     if (ret == NULL) {
         return NULL;
     }
-    memset(ret, 0, n);
+    memset(ret, 0, n * size);
     return ret;
 }
 
